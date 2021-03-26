@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { OrderModule } from './order/order.module';
 import MongoConfig from './config/mongo.config'
 import RabbitMQConfig from './config/rabbitmq.config'
 @Module({
@@ -18,6 +19,7 @@ import RabbitMQConfig from './config/rabbitmq.config'
       }), 
       inject: [ConfigService]
     }),
+    OrderModule,
 
   ],
   controllers: [AppController],
