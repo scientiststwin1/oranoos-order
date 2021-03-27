@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { ChangeLevelDto, RegisterOrderDto } from './model/order.dto';
 import { Order, OrderDocument } from './schema/order.schema';
 import {OrderLevel} from '../shared/order.enum'
+import {timeout} from 'rxjs/operators'
 @Injectable()
 export class OrderService {
 
@@ -20,13 +21,13 @@ export class OrderService {
 
                 const orderItems = []
                 for(let product of order_product){
-                    const productInformation = await this.client.send('product-info',{id: product.product_id}).toPromise();
+                    const productInformation = await this.client.send('product-info',{id: product.product_id}).pipe(timeout(1000)).toPromise();
                     const order = {
                         number: product.number,
-                        _id: productInformation.data._id,
-                        name: productInformation.data.name,
-                        price: productInformation.data.price,
-                        description: productInformation.data.description 
+                        _id: productInformation?.data._id,
+                        name: productInformation?.data.name,
+                        price: productInformation?.data.price,
+                        description: productInformation?.data.description 
                     }
                     orderItems.push(order)
                 }
@@ -39,7 +40,7 @@ export class OrderService {
                 await order.save()
                 resolve(1)
             }catch(err){
-                reject()
+                reject(err)
             }
         })
     }

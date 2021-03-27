@@ -32,7 +32,7 @@ export class ChangeLevelDto {
 
     @ApiProperty()
     @IsNotEmpty()
-    @IsInt()
+    @IsNumber()
     @Min(1)
     @Max(3)
     new_level: number
