@@ -6,6 +6,7 @@ import { ChangeLevelDto, RegisterOrderDto } from './model/order.dto';
 import { Order, OrderDocument } from './schema/order.schema';
 import {OrderLevel} from '../shared/order.enum'
 import {timeout} from 'rxjs/operators'
+import { ResultError } from 'src/shared/main.helper';
 @Injectable()
 export class OrderService {
 
@@ -40,7 +41,7 @@ export class OrderService {
                 await order.save()
                 resolve(1)
             }catch(err){
-                reject(err)
+                reject(new ResultError(err, 500, 500, "Error occurred"))
             }
         })
     }
@@ -52,7 +53,7 @@ export class OrderService {
                 console.log(products)
                 resolve(products)
             }catch(err){
-                reject(err)
+                reject(new ResultError(err, 500, 500, "Error occurred"))
             }
 
         })
@@ -66,7 +67,7 @@ export class OrderService {
                 console.log("--->>>",newOrder)
                 resolve(newOrder)
             }catch(err){
-                reject(err)
+                reject(new ResultError(err, 500, 500, "Error occurred"))
             }
         })
     }
