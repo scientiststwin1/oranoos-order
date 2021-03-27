@@ -6,7 +6,7 @@ import { ChangeLevelDto, RegisterOrderDto } from './model/order.dto';
 import { Order, OrderDocument } from './schema/order.schema';
 import {OrderLevel} from '../shared/order.enum'
 import {timeout} from 'rxjs/operators'
-import { ResultError } from 'src/shared/main.helper';
+import { Result, ResultError } from 'src/shared/main.helper';
 @Injectable()
 export class OrderService {
 
@@ -17,7 +17,7 @@ export class OrderService {
 
     registerOrder(userId: string, registerOrderDto: RegisterOrderDto){
         const { order_product } = registerOrderDto
-        return new Promise(async (resolve, reject)=>{
+        return new Promise(async (resolve: (data: Result) => void, reject)=>{
             try{
 
                 const orderItems = []
@@ -39,7 +39,7 @@ export class OrderService {
                 order.level = OrderLevel.LEVEL1
     
                 await order.save()
-                resolve(1)
+                resolve(new Result(order, {message: "product saved", code: 201}))
             }catch(err){
                 reject(new ResultError(err, 500, 500, "Error occurred"))
             }
@@ -47,11 +47,11 @@ export class OrderService {
     }
 
     listOrder(page: number, count: number){
-        return new Promise(async(resolve, reject)=>{
+        return new Promise(async(resolve: (data: Result) => void, reject)=>{
             try{
                 const products = await this.orderModel.find().sort({ created_at: 1 }).skip(+page * +count).limit(+count)
-                console.log(products)
-                resolve(products)
+
+                resolve(new Result(products, {message: "order list", code: 200}))
             }catch(err){
                 reject(new ResultError(err, 500, 500, "Error occurred"))
             }
@@ -59,13 +59,13 @@ export class OrderService {
         })
     }
 
-    changeLevel(changeLevelDto: ChangeLevelDto){
+    changeLevel(changeLevelDto: ChangeLevelDto): Promise<Result>{
         const {order_id, new_level} = changeLevelDto
-        return new Promise(async(resolve, reject)=>{
+        return new Promise(async(resolve: (data: Result) => void, reject)=>{
             try{
                 const newOrder = await this.orderModel.updateOne({_id: order_id},{ $set: {level: new_level}}).exec()
-                console.log("--->>>",newOrder)
-                resolve(newOrder)
+                
+                resolve(new Result(null, {message: "level changed"}))
             }catch(err){
                 reject(new ResultError(err, 500, 500, "Error occurred"))
             }
