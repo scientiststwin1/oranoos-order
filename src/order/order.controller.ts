@@ -11,14 +11,14 @@ export class OrderController {
         private readonly orderService: OrderService
     ){}
 
-    @Post('/register')
+    @Post('/')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     submitOrder(@Body() registerOrderDto: RegisterOrderDto, @User() user: any){
         return this.orderService.registerOrder(user.id,registerOrderDto)
     }
 
-    @Get('/orders')
+    @Get('/')
     @UseGuards(JwtAuthGuard, AdminGuard)
     @ApiBearerAuth()
     listOrder(@Query('count') count: number, @Query('page') page: number){
