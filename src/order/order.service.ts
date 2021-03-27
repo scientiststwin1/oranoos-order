@@ -2,9 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { RegisterOrderDto } from './model/order.dto';
+import { ChangeLevelDto, RegisterOrderDto } from './model/order.dto';
 import { Order, OrderDocument } from './schema/order.schema';
-
+import {OrderLevel} from '../shared/order.enum'
 @Injectable()
 export class OrderService {
 
@@ -34,12 +34,38 @@ export class OrderService {
                 const order = new this.orderModel()
                 order.user = userId
                 order.products = orderItems
-                order.level = 0
+                order.level = OrderLevel.LEVEL1
     
                 await order.save()
                 resolve(1)
             }catch(err){
                 reject()
+            }
+        })
+    }
+
+    listOrder(page: number, count: number){
+        return new Promise(async(resolve, reject)=>{
+            try{
+                const products = await this.orderModel.find().sort({ created_at: 1 }).skip(+page * +count).limit(+count)
+                console.log(products)
+                resolve(products)
+            }catch(err){
+                reject(err)
+            }
+
+        })
+    }
+
+    changeLevel(changeLevelDto: ChangeLevelDto){
+        const {order_id, new_level} = changeLevelDto
+        return new Promise(async(resolve, reject)=>{
+            try{
+                const newOrder = await this.orderModel.updateOne({_id: order_id},{ $set: {level: new_level}}).exec()
+                console.log("--->>>",newOrder)
+                resolve(newOrder)
+            }catch(err){
+                reject(err)
             }
         })
     }

@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsNumber, IsString, ValidateNested } from "class-validator";
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsInt, IsNotEmpty, IsNumber, isString, IsString, Max, Min, ValidateNested } from "class-validator";
 
 class Property{
     @ApiProperty()
@@ -23,3 +23,18 @@ export class RegisterOrderDto {
     order_product: Property[]
 }
 
+export class ChangeLevelDto {
+    
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    order_id: string
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsInt()
+    @Min(1)
+    @Max(3)
+    new_level: number
+
+}
